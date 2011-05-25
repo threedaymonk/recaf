@@ -53,3 +53,13 @@ should_parse('if with one branch',
     [ 'block',
       [ 'assign', $i('number'), [ 'unary_minus', 42 ]]]]
 );
+
+should_parse('if with else',
+  'if (opposite) { number = 1; } else { number = 2; }',
+  [ 'if',
+    $i('opposite'),
+    [ 'block',
+      [ 'assign', $i('number'), 1 ]],
+    [ 'block',
+      [ 'assign', $i('number'), 2 ]]]
+);
