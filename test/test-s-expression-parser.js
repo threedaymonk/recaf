@@ -45,3 +45,11 @@ should_parse('assignment of boolean',
   'opposite = true;',
   [ 'assign', $i('opposite'), true ]
 );
+
+should_parse('if with one branch',
+  'if (opposite) { number = -42; }',
+  [ 'if',
+    $i('opposite'),
+    [ 'block',
+      [ 'assign', $i('number'), [ 'unary_minus', 42 ]]]]
+);
