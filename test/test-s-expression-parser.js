@@ -36,7 +36,12 @@ should_parse('dot calls',
         $i('slice') ]]]
 );
 
-should_parse('assignment',
+should_parse('assignment of number',
   'number = 42;',
   [ 'assign', $i('number'), 42 ]
+);
+
+should_parse('assignment of boolean',
+  'opposite = true;',
+  [ 'assign', $i('opposite'), true ]
 );
