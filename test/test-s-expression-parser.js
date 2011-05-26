@@ -3,13 +3,13 @@ var parser = require('sexp-parser.js');
 
 var $i = function(v){
   return ['identifier', v];
-}
+};
 
 var should_parse = function(name, input, expected){
   exports[name] = function(test){
     test.deepEqual(parser.parse(input), ['script', expected]);
     test.done();
-  }
+  };
 };
 
 should_parse('variable declarations',
@@ -94,4 +94,33 @@ should_parse('function',
     [ 'function',
       [ 'return',
         [ 'mul', $i('x'), $i('x') ]]]]
+);
+
+should_parse('object',
+  'math = {'+
+  '  root: Math.sqrt,'+
+  '  square: square,'+
+  '  cube: function(x) {'+
+  '    return x * square(x);'+
+  '  }'+
+  '};',
+  [ 'assign',
+    $i('math'),
+    [ 'object_init',
+      [ 'property_init',
+        $i('root'),
+        [ 'dot',
+          $i('Math'),
+          $i('sqrt') ]],
+      [ 'property_init',
+        $i('square'),
+        $i('square') ],
+      [ 'property_init',
+        $i('cube'),
+        [ 'function',
+          [ 'return',
+            [ 'mul',
+              $i('x'),
+              [ 'call', $i('square'),
+                [ 'list', $i('x') ]]]]]]]]
 );
