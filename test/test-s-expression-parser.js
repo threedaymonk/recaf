@@ -77,3 +77,10 @@ should_parse('if with else if',
       [ 'block',
         [ 'assign', $i('b'), 3]]]]
 );
+
+should_parse('array',
+  'list = [1, 2, 3, 4, 5];',
+  [ 'assign',
+    $i('list'),
+    [ 'array_init', 1, 2, 3, 4, 5 ]]
+);
