@@ -63,3 +63,17 @@ should_parse('if with else',
     [ 'block',
       [ 'assign', $i('number'), 2 ]]]
 );
+
+should_parse('if with else if',
+  'if (a) { b = 1; } else if (c) { b = 2; } else { b = 3; }',
+  [ 'if',
+    $i('a'),
+    [ 'block',
+      [ 'assign', $i('b'), 1]],
+    [ 'if',
+      $i('c'),
+      [ 'block',
+        [ 'assign', $i('b'), 2]],
+      [ 'block',
+        [ 'assign', $i('b'), 3]]]]
+);
