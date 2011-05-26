@@ -84,3 +84,14 @@ should_parse('array',
     $i('list'),
     [ 'array_init', 1, 2, 3, 4, 5 ]]
 );
+
+should_parse('function',
+  'square = function(x) {'+
+  '  return x * x;'+
+  '};',
+  [ 'assign',
+    $i('square'),
+    [ 'function',
+      [ 'return',
+        [ 'mul', $i('x'), $i('x') ]]]]
+);
