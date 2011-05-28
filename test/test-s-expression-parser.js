@@ -124,3 +124,41 @@ should_parse('object',
               [ 'call', $i('square'),
                 [ 'list', $i('x') ]]]]]]]]
 );
+
+should_parse('function with arguments',
+  'race = function() {'+
+  '  var runners, winner;'+
+  '  winner = arguments[0], runners = 2 <= arguments.length ? __slice.call(arguments, 1) : [];'+
+  '  return print(winner, runners);'+
+  '};',
+  [ 'assign',
+    [ 'identifier', 'race' ],
+    [ 'function',
+      [ 'var',
+        [ 'identifier', 'runners' ],
+        [ 'identifier', 'winner' ]],
+      [ 'comma',
+        [ 'assign',
+          [ 'identifier', 'winner' ],
+          [ 'index', [ 'identifier', 'arguments' ], 0 ]],
+        [ 'assign',
+          [ 'identifier', 'runners' ],
+          [ 'hook',
+            [ 'le',
+              2,
+              [ 'dot',
+                [ 'identifier', 'arguments' ],
+                [ 'identifier', 'length' ]]],
+            [ 'call',
+              [ 'dot',
+                [ 'identifier', '__slice' ],
+                [ 'identifier', 'call' ]],
+              [ 'list', [ 'identifier', 'arguments' ], 1 ]],
+            [ 'array_init' ]]]],
+      [ 'return',
+        [ 'call',
+          [ 'identifier', 'print' ],
+          [ 'list',
+            [ 'identifier', 'winner' ],
+            [ 'identifier', 'runners' ]]]]]]
+);
