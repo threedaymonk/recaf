@@ -162,3 +162,19 @@ should_parse('function with arguments',
             [ 'identifier', 'winner' ],
             [ 'identifier', 'runners' ]]]]]]
 );
+
+should_parse('typeof and strings',
+  'if (typeof elvis !== "undefined" && elvis !== null) {'+
+  '  alert("I knew it!");'+
+  '}',
+  [ 'if',
+    [ 'and',
+      [ 'strict_ne',
+        [ 'typeof', [ 'identifier', 'elvis' ]],
+        "undefined" ],
+      [ 'strict_ne', [ 'identifier', 'elvis' ], [ 'null' ]]],
+    [ 'block',
+      [ 'call',
+        [ 'identifier', 'alert' ],
+        [ 'list', "I knew it!"]]]]
+);
