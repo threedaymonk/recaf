@@ -140,7 +140,7 @@ should_parse('array subscript',
   [ 'index', $i('foo'), 0 ]
 );
 
-should_parse('function with arguments',
+should_parse('arguments object',
   'var a = function() { return arguments[0]; }',
   [ 'var',
     [ $i('a'),
@@ -150,18 +150,28 @@ should_parse('function with arguments',
           [ 'index', $i('arguments'), 0 ]]]]]
 );
 
-should_parse('typeof and strings',
-  'if (typeof elvis !== "undefined" && elvis !== null) {'+
-  '  alert("I knew it!");'+
-  '}',
-  [ 'if',
-    [ 'and',
-      [ 'strict_ne',
-        [ 'typeof', [ 'identifier', 'elvis' ]],
-        "undefined" ],
-      [ 'strict_ne', [ 'identifier', 'elvis' ], [ 'null' ]]],
-    [ 'block',
-      [ 'call',
-        [ 'identifier', 'alert' ],
-        [ 'list', "I knew it!"]]]]
+
+should_parse('typeof',
+  'typeof foo;',
+  [ 'typeof', $i('foo') ]
+);
+
+should_parse('strict equality',
+  'a === b',
+  [ 'strict_eq', $i('a'), $i('b') ]
+);
+
+should_parse('strict inequality',
+  'a !== b',
+  [ 'strict_ne', $i('a'), $i('b') ]
+);
+
+should_parse('function call',
+  'foo(1, 2);',
+  [ 'call', $i('foo'), [ 1, 2 ] ]
+);
+
+should_parse('and',
+  'a && b;',
+  [ 'and', $i('a'), $i('b') ]
 );
