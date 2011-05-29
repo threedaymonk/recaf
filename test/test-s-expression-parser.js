@@ -12,56 +12,76 @@ var should_parse = function(name, input, expected){
   };
 };
 
-should_parse('variable declarations',
-  'var cubes, list, math, num, number, opposite, race, square;',
-  [ 'var',
-    $i('cubes'),
-    $i('list'),
-    $i('math'),
-    $i('num'),
-    $i('number'),
-    $i('opposite'),
-    $i('race'),
-    $i('square') ]
+should_parse('single variable declaration',
+  'var foo;',
+  [ 'var', $i('foo') ]
+);
+
+should_parse('multiple variable declaration',
+  'var foo, bar;',
+  [ 'var', $i('foo'), $i('bar') ]
+);
+
+should_parse('variable initialization',
+  'var foo = 1;',
+  [ 'var', [ $i('foo'), 1 ]]
 );
 
 should_parse('dot calls',
-  'var __slice = Array.prototype.slice;',
-  [ 'var',
-    [ $i('__slice'),
-      [ 'dot',
-        [ 'dot',
-          $i('Array'),
-          $i('prototype')],
-        $i('slice') ]]]
+  'Array.prototype.slice;',
+  [ 'dot',
+    [ 'dot',
+      $i('Array'),
+      $i('prototype')],
+    $i('slice') ]
 );
 
-should_parse('assignment of number',
+should_parse('number',
+  '42;',
+  42
+);
+
+should_parse('string',
+  '"foo";',
+  'foo'
+);
+
+should_parse('true',
+  'true;',
+  true
+);
+
+should_parse('false',
+  'false;',
+  false
+);
+
+should_parse('assignment',
   'number = 42;',
   [ 'assign', $i('number'), 42 ]
 );
 
-should_parse('assignment of boolean',
-  'opposite = true;',
-  [ 'assign', $i('opposite'), true ]
+should_parse('negation',
+  '-42;',
+  [ 'unary_minus', 42 ]
 );
 
 should_parse('if with one branch',
-  'if (opposite) { number = -42; }',
+  'if (a) { b = 1; }',
   [ 'if',
-    $i('opposite'),
+    $i('a'),
     [ 'block',
-      [ 'assign', $i('number'), [ 'unary_minus', 42 ]]]]
+      [ 'assign', $i('b'), 1 ]]]
 );
 
 should_parse('if with else',
-  'if (opposite) { number = 1; } else { number = 2; }',
+  'if (a) { b = 1; } else { b = 2; }',
   [ 'if',
-    $i('opposite'),
+    $i('a'),
     [ 'block',
-      [ 'assign', $i('number'), 1 ]],
+      [ 'assign', $i('b'), 1 ]],
     [ 'block',
-      [ 'assign', $i('number'), 2 ]]]
+      [ 'assign', $i('b'), 2 ]]]
 );
 
 should_parse('if with else if',
@@ -79,88 +99,55 @@ should_parse('if with else if',
 );
 
 should_parse('array',
-  'list = [1, 2, 3, 4, 5];',
+  'list = [1, 2];',
   [ 'assign',
     $i('list'),
-    [ 'array_init', 1, 2, 3, 4, 5 ]]
+    [ 'array_init', 1, 2 ]]
+);
+
+should_parse('multiplication',
+  'x * x;',
+  [ 'mul', $i('x'), $i('x') ]
 );
 
 should_parse('function',
-  'square = function(x) {'+
-  '  return x * x;'+
+  'var square = function(x) {'+
+  '  return x;'+
   '};',
-  [ 'assign',
-    $i('square'),
-    [ 'function',
-      [ 'return',
-        [ 'mul', $i('x'), $i('x') ]]]]
+  [ 'var',
+    [ $i('square'),
+      [ 'function',
+        [ 'x' ],
+        [ 'return', $i('x') ]]]]
 );
 
 should_parse('object',
-  'math = {'+
-  '  root: Math.sqrt,'+
-  '  square: square,'+
-  '  cube: function(x) {'+
-  '    return x * square(x);'+
-  '  }'+
-  '};',
-  [ 'assign',
-    $i('math'),
-    [ 'object_init',
-      [ 'property_init',
-        $i('root'),
-        [ 'dot',
-          $i('Math'),
-          $i('sqrt') ]],
-      [ 'property_init',
-        $i('square'),
-        $i('square') ],
-      [ 'property_init',
-        $i('cube'),
-        [ 'function',
-          [ 'return',
-            [ 'mul',
-              $i('x'),
-              [ 'call', $i('square'),
-                [ 'list', $i('x') ]]]]]]]]
+  'var a = { b: "one", c: 2 };',
+  [ 'var',
+    [ $i('a'),
+      [ 'object_init',
+        [ 'property_init', $i('b'), 'one' ],
+        [ 'property_init', $i('c'), 2 ]]]]
+);
+
+should_parse('ternary operator',
+  'a ? b : c',
+  [ 'hook', $i('a'), $i('b'), $i('c') ]
+);
+
+should_parse('array subscript',
+  'foo[0];',
+  [ 'index', $i('foo'), 0 ]
 );
 
 should_parse('function with arguments',
-  'race = function() {'+
-  '  var runners, winner;'+
-  '  winner = arguments[0], runners = 2 <= arguments.length ? __slice.call(arguments, 1) : [];'+
-  '  return print(winner, runners);'+
-  '};',
-  [ 'assign',
-    [ 'identifier', 'race' ],
-    [ 'function',
-      [ 'var',
-        [ 'identifier', 'runners' ],
-        [ 'identifier', 'winner' ]],
-      [ 'comma',
-        [ 'assign',
-          [ 'identifier', 'winner' ],
-          [ 'index', [ 'identifier', 'arguments' ], 0 ]],
-        [ 'assign',
-          [ 'identifier', 'runners' ],
-          [ 'hook',
-            [ 'le',
-              2,
-              [ 'dot',
-                [ 'identifier', 'arguments' ],
-                [ 'identifier', 'length' ]]],
-            [ 'call',
-              [ 'dot',
-                [ 'identifier', '__slice' ],
-                [ 'identifier', 'call' ]],
-              [ 'list', [ 'identifier', 'arguments' ], 1 ]],
-            [ 'array_init' ]]]],
-      [ 'return',
-        [ 'call',
-          [ 'identifier', 'print' ],
-          [ 'list',
-            [ 'identifier', 'winner' ],
-            [ 'identifier', 'runners' ]]]]]]
+  'var a = function() { return arguments[0]; }',
+  [ 'var',
+    [ $i('a'),
+      [ 'function',
+        [],
+        [ 'return',
+          [ 'index', $i('arguments'), 0 ]]]]]
 );
 
 should_parse('typeof and strings',
