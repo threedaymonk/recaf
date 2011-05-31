@@ -2,7 +2,15 @@ var common = require('./common');
 var parser = require('sexp-parser.js');
 
 var $i = function(v){
-  return ['identifier', v];
+  return [ 'identifier', v ];
+};
+
+var $n = function(v){
+  return [ 'number', v ];
+};
+
+var $s = function(v){
+  return [ 'string', v ];
 };
 
 var should_parse = function(name, input, expected){
@@ -24,7 +32,7 @@ should_parse('multiple variable declaration',
 
 should_parse('variable initialization',
   'var foo = 1;',
-  [ 'var', [ $i('foo'), 1 ]]
+  [ 'var', [ $i('foo'), $n(1) ]]
 );
 
 should_parse('dot calls',
@@ -38,32 +46,32 @@ should_parse('dot calls',
 
 should_parse('number',
   '42;',
-  42
+  $n(42)
 );
 
 should_parse('string',
   '"foo";',
-  'foo'
+  $s('foo')
 );
 
 should_parse('true',
   'true;',
-  true
+  [ 'true' ]
 );
 
 should_parse('false',
   'false;',
-  false
+  [ 'false' ]
 );
 
 should_parse('assignment',
   'number = 42;',
-  [ 'assign', $i('number'), 42 ]
+  [ 'assign', $i('number'), $n(42) ]
 );
 
 should_parse('negation',
   '-42;',
-  [ 'unary_minus', 42 ]
+  [ 'unary_minus', $n(42) ]
 );
 
 should_parse('if with one branch',
@@ -71,7 +79,7 @@ should_parse('if with one branch',
   [ 'if',
     $i('a'),
     [ 'block',
-      [ 'assign', $i('b'), 1 ]]]
+      [ 'assign', $i('b'), $n(1) ]]]
 );
 
 should_parse('if with else',
@@ -79,9 +87,9 @@ should_parse('if with else',
   [ 'if',
     $i('a'),
     [ 'block',
-      [ 'assign', $i('b'), 1 ]],
+      [ 'assign', $i('b'), $n(1) ]],
     [ 'block',
-      [ 'assign', $i('b'), 2 ]]]
+      [ 'assign', $i('b'), $n(2) ]]]
 );
 
 should_parse('if with else if',
@@ -89,20 +97,20 @@ should_parse('if with else if',
   [ 'if',
     $i('a'),
     [ 'block',
-      [ 'assign', $i('b'), 1]],
+      [ 'assign', $i('b'), $n(1) ]],
     [ 'if',
       $i('c'),
       [ 'block',
-        [ 'assign', $i('b'), 2]],
+        [ 'assign', $i('b'), $n(2) ]],
       [ 'block',
-        [ 'assign', $i('b'), 3]]]]
+        [ 'assign', $i('b'), $n(3) ]]]]
 );
 
 should_parse('array',
   'list = [1, 2];',
   [ 'assign',
     $i('list'),
-    [ 'array_init', 1, 2 ]]
+    [ 'array_init', $n(1), $n(2) ]]
 );
 
 should_parse('multiplication',
@@ -126,8 +134,8 @@ should_parse('object',
   [ 'var',
     [ $i('a'),
       [ 'object_init',
-        [ 'property_init', $i('b'), 'one' ],
-        [ 'property_init', $i('c'), 2 ]]]]
+        [ 'property_init', $i('b'), $s('one') ],
+        [ 'property_init', $i('c'), $n(2) ]]]]
 );
 
 should_parse('ternary operator',
@@ -137,7 +145,7 @@ should_parse('ternary operator',
 
 should_parse('array subscript',
   'foo[0];',
-  [ 'index', $i('foo'), 0 ]
+  [ 'index', $i('foo'), $n(0) ]
 );
 
 should_parse('arguments object',
@@ -147,7 +155,7 @@ should_parse('arguments object',
       [ 'function',
         [],
         [ 'return',
-          [ 'index', $i('arguments'), 0 ]]]]]
+          [ 'index', $i('arguments'), $n(0) ]]]]]
 );
 
 
@@ -168,7 +176,7 @@ should_parse('strict inequality',
 
 should_parse('function call',
   'foo(1, 2);',
-  [ 'call', $i('foo'), [ 1, 2 ] ]
+  [ 'call', $i('foo'), [ $n(1), $n(2) ] ]
 );
 
 should_parse('and',
