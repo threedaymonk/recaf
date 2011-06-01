@@ -1,20 +1,13 @@
 var common = require('./common');
 var parser = require('sexp-parser.js');
 
-var $i = function(v){
-  return [ 'identifier', v ];
-};
-
-var $n = function(v){
-  return [ 'number', v ];
-};
-
-var $s = function(v){
-  return [ 'string', v ];
-};
+var $i = common.identifier;
+var $n = common.number;
+var $s = common.string;
 
 var should_parse = function(name, input, expected){
   exports[name] = function(test){
+    test.expect(1)
     test.deepEqual(parser.parse(input), ['script', expected]);
     test.done();
   };
