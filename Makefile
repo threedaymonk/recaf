@@ -1,7 +1,7 @@
 .PHONY:	all lint test loc
 
 SRC_FILES=`find ./lib -name '*.js'`
-TEST_FILES=`find ./test -name '*.js'`
+TEST_FILES=`find ./test -name 'test-*.js'`
 
 all:	lint test
 
