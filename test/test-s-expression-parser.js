@@ -174,9 +174,14 @@ should_parse('strict inequality',
   [ 'strict_ne', $i('a'), $i('b') ]
 );
 
-should_parse('function call',
+should_parse('function call with parameters',
   'foo(1, 2);',
-  [ 'call', $i('foo'), [ $n(1), $n(2) ] ]
+  [ 'call', $i('foo'), [ $n(1), $n(2) ]]
+);
+
+should_parse('function call without parameters',
+  'foo();',
+  [ 'call', $i('foo'), []]
 );
 
 should_parse('and',
