@@ -134,8 +134,8 @@ should_parse('object',
   [ 'var',
     [ $i('a'),
       [ 'object_init',
-        [ 'property_init', $i('b'), $s('one') ],
-        [ 'property_init', $i('c'), $n(2) ]]]]
+        [ $i('b'), $s('one') ],
+        [ $i('c'), $n(2) ]]]]
 );
 
 should_parse('ternary operator',
